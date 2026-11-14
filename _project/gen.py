@@ -1,107 +1,10 @@
-# Генератор страниц. Запуск из корня репо: python3 _project/gen.py
+# Генератор страниц. Запуск из корня репо: python3 _project/gen.py, потом python3 _project/og.py
 import json, os
-BASE="https://timmiehub.github.io/otvety/"
-PAGES = [
- dict(slug="da", word="Да", dot=".", a="#b9a4ff", b="#6d4aff", bg="#0b0716",
-  badge="Ответ v2.0 уже доступен", tag="Ответ, которому доверяют.",
-  cta="Получить «Да»", cta2="Задать вопрос",
-  feats=[("Мгновенно","Ноль секунд на раздумья. Собеседник доволен ещё до конца вопроса."),
-         ("Без условий","Никаких «да, но…». Чистый продукт без примесей."),
-         ("Совместим со всем","Свидания, работа, «ещё по одной». Интеграция из коробки.")],
-  stats=[("0 мс","на сомнения"),("100%","уверенности"),("∞","применений")],
-  vs=("Может быть",[("Скорость ответа","мгновенно","через неделю"),("Понятность","кристальная","туман"),("Обиды","нет","копятся")]),
-  price="Бесплатно. Всегда.", final="Скажи это.", others="Попробуй другие ответы"),
- dict(slug="net", word="Нет", dot=".", a="#ff8a7a", b="#e0262f", bg="#140707",
-  badge="Ответ v3.1 · Enterprise Boundaries", tag="Граница, которую уважают.",
-  cta="Получить «Нет»", cta2="Попросить ещё раз",
-  feats=[("Экономит время","Одно слово вместо трёх часов «ну я подумаю»."),
-         ("Без объяснений","Не требует аргументов, справок и презентации на 40 слайдов."),
-         ("Работает с первого раза","Повторный запрос возвращает тот же результат. Детерминизм.")],
-  stats=[("1","слог"),("0","лишних обязательств"),("+40%","свободного времени")],
-  vs=("Ну, наверное…",[("Последствия","никаких","переезд к тёще"),("Ясность","абсолютная","сомнительная"),("Сожаление","редко","каждый раз")]),
-  price="Бесплатно. Но вы откажетесь.", final="Откажи красиво.", others="Есть и другие варианты"),
- dict(slug="ne-znayu", word="Не знаю", dot="…", a="#ffd76a", b="#c98a00", bg="#100e06",
-  badge="Ответ v0.9 beta · Powered by неопределённость", tag="Честность уровня enterprise.",
-  cta="Получить «Не знаю»", cta2="Подумать ещё",
-  feats=[("Нулевая ответственность","Ничего не обещал — ничего не должен."),
-         ("Подходит на любой вопрос","От «куда пойдём ужинать» до смысла жизни."),
-         ("Снимает ожидания","Никто не разочарован, потому что никто ничего не ждал.")],
-  stats=[("50/50","точность"),("∞","времени на раздумья"),("0","ошибок за всю историю")],
-  vs=("Уверенный бред",[("Честность","100%","0%"),("Риск опозориться","минимальный","высокий"),("Выглядит умно","почему-то да","до первой проверки")]),
-  price="Цена? Без понятия.", final="Пожми плечами.", others="Может, другой ответ?"),
- dict(slug="nahuy", word="Иди нахуй", dot=".", a="#d4ff3a", b="#7bd400", bg="#060a02",
-  badge="Ответ v∞ · Powered by закончившееся терпение", tag="Ответ, который закрывает тему.",
-  cta="Отправить", cta2="Продолжить спор",
-  feats=[("Конец диалога","Финальная версия. Обновлений не планируется."),
-         ("Понятно без перевода","Поддерживает все языки мира, включая жесты."),
-         ("Экологично","Экономит нервные клетки обеим сторонам. Ну, одной точно.")],
-  stats=[("2","слова"),("0","встречных вопросов"),("100%","закрытых тем")],
-  vs=("Давай обсудим",[("Длительность","2 секунды","до утра"),("Эффективность","максимальная","спорная"),("Катарсис","есть","нет")]),
-  price="Бесплатно. Удовольствие бесценно.", final="Отправь уже.", others="Слишком жёстко? Есть мягче"),
- dict(slug="mozhet-byt", word="Может быть", dot=".", a="#8fd0ff", b="#1f7fe0", bg="#040a14",
-  badge="Ответ v1.5 · Quantum Edition", tag="Ответ в суперпозиции.",
-  cta="Получить «Может быть»", cta2="Уточнить",
-  feats=[("Гибкость","Одновременно да и нет, пока кто-нибудь не проверит."),
-         ("Выход всегда открыт","Можно передумать в любую сторону. Без штрафов."),
-         ("Надежда включена","Собеседник уходит счастливым. Ненадолго.")],
-  stats=[("50%","да"),("50%","нет"),("100%","интриги")],
-  vs=("Да",[("Обязательства","никаких","все"),("Пространство для манёвра","огромное","ноль"),("Нервы собеседника","на пределе","в норме")]),
-  price="Возможно, бесплатно.", final="Оставь интригу.", others="Определился? Выбирай"),
- dict(slug="ya-podumayu", word="Я подумаю", dot=".", a="#79f2d4", b="#0aa585", bg="#03100d",
-  badge="Ответ v4.0 · Async Processing", tag="Отказ с отложенной доставкой.",
-  cta="Получить «Я подумаю»", cta2="Напомнить позже",
-  feats=[("Асинхронно","Ответ придёт когда-нибудь. Скорее всего, никогда."),
-         ("Вежливо","Звучит как интерес, работает как «нет»."),
-         ("Масштабируется","Можно думать над тысячей предложений одновременно.")],
-  stats=[("∞","дней на обработку"),("0","финальных решений"),("97%","так и не подумали")],
-  vs=("Нет",[("Конфликт","отложен","прямо сейчас"),("Выглядишь как","вдумчивый","грубиян"),("Результат","тот же","тот же")]),
-  price="Цену обдумаем.", final="Подумай об этом.", others="Пока думаешь — глянь другие"),
- dict(slug="ok", word="Ок", dot=".", a="#ececf2", b="#70707e", bg="#0a0a0c",
-  badge="Ответ v1.0 · Minimal Edition", tag="Два символа. Бесконечный подтекст.",
-  cta="Получить «Ок»", cta2="Расшифровать",
-  feats=[("Минимализм","Никаких лишних букв. Даже точка — на ваш страх и риск."),
-         ("Многозначность","Может значить «отлично», а может — «ты ещё пожалеешь»."),
-         ("Работает везде","Чат, почта, спор с мамой. Универсальный закрыватель.")],
-  stats=[("2","символа"),("47","смыслов"),("1","точка, меняющая всё")],
-  vs=("Окей!",[("Энтузиазм","не обнаружен","подозрительный"),("Пассивная агрессия","встроена","нет"),("Тревога собеседника","высокая","низкая")]),
-  price="Ок.", final="Ок.", others="Не ок? Есть другие"),
- dict(slug="otstan", word="Отстань", dot=".", a="#ff9fd4", b="#d8257f", bg="#14050d",
-  badge="Ответ v2.2 · Personal Space Pro", tag="Личное пространство как сервис.",
-  cta="Получить «Отстань»", cta2="Ещё один вопрос",
-  feats=[("Мгновенная тишина","Количество сообщений падает до нуля. В теории."),
-         ("Без мата","Подходит для работы, семьи и общих чатов."),
-         ("Защита от «а может»","Блокирует уговоры на уровне протокола.")],
-  stats=[("1","слово"),("2 м","личного пространства"),("0","«ну пожалуйста»")],
-  vs=("Ну ладно, давай",[("Время на себя","есть","забудь"),("Самоуважение","на месте","под вопросом"),("Следующие просьбы","реже","чаще")]),
-  price="Бесплатно. Только отстаньте.", final="Отстань.", others="Слишком мягко? Есть пожёстче"),
- dict(slug="pohuy", word="Похуй", dot=".", a="#ffb675", b="#f05800", bg="#140902",
-  badge="Ответ v∞ · Zen Mode", tag="Буддизм для занятых.",
-  cta="Получить «Похуй»", cta2="Переживать",
-  feats=[("Дзен из коробки","Просветление без медитаций, ретритов и смузи."),
-         ("Экономит нервы","Тревожность падает до заводских настроек."),
-         ("Совместим с любой проблемой","Дедлайн, бывшая, курс доллара — всё обрабатывается одинаково.")],
-  stats=[("0","переживаний"),("0","бессонных ночей"),("100%","спокойствия")],
-  vs=("Накрутить себя",[("Сон","крепкий","3 часа"),("Морщины","нет","есть"),("Результат","такой же","такой же")]),
-  price="Сколько стоит? Похуй.", final="Отпусти.", others="Не похуй? Выбери другой"),
- dict(slug="sam-durak", word="Сам дурак", dot=".", a="#e8bd8f", b="#9a5f26", bg="#0f0a06",
-  badge="Ответ v1.0 · Classic Since 1st Grade", tag="Аргумент, проверенный школой.",
-  cta="Получить «Сам дурак»", cta2="Возразить",
-  feats=[("Зеркальная защита","Любое оскорбление возвращается отправителю."),
-         ("Не требует логики","Работает даже когда аргументов нет. Особенно тогда."),
-         ("Классика","Проверено поколениями на продлёнке.")],
-  stats=[("100%","отражения"),("0","контраргументов"),("30+","лет в продакшене")],
-  vs=("Развёрнутый ответ",[("Время на сочинение","0 сек","20 минут"),("Попадание","точное","мимо"),("Ностальгия","есть","нет")]),
-  price="Бесплатно. Сам такой.", final="Отзеркаль.", others="Аргументы кончились? Есть ещё"),
- dict(slug="huynya", word="Хуйня", dot=".", a="#6ef7ff", b="#00a3c7", bg="#020d10",
-  badge="Фидбек v1.0 · Code Review Edition", tag="Переделывай.",
-  cta="Получить «Хуйня»", cta2="А что не так?",
-  feats=[("Конструктивно","Одно слово вмещает весь фидбек. Детали — на ваше усмотрение."),
-         ("Мотивирует","Ничто так не вдохновляет переделать, как это слово."),
-         ("Универсально","Подходит для дизайна, кода, презентаций и чужих стартапов.")],
-  stats=[("1","слово фидбека"),("∞","итераций"),("v27","финал_точно_финал")],
-  vs=("В целом неплохо",[("Честность","100%","0%"),("Итог","переделано","как было"),("Экономия времени","сразу","через месяц")]),
-  price="Бесплатно. Переделывай.", final="Переделывай.", others="Другие ответы"),
-]
+# Адрес сайта. Меняется только здесь (и в секрете BASE_URL у бота).
+BASE = os.environ.get("BASE_URL", "https://timmiehub.github.io/otvety/")
+STUDIO = "https://nerdstudio.dev/?utm_source=otvety&utm_medium=referral"
+# Все ответы — в _project/answers.json (один источник для сайта и бота).
+PAGES = json.load(open("_project/answers.json", encoding="utf-8"))
 ALL = [(p["slug"],p["word"]) for p in PAGES]
 FONTS = '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;800;900&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">'
 BASE_CSS = """
@@ -145,7 +48,9 @@ def page(p):
 .ring:after{{content:"";position:absolute;inset:14%;border-radius:50%;border:1px dashed color-mix(in srgb,var(--a) 25%,transparent);animation:spin 40s linear infinite}}
 @keyframes spin{{to{{transform:rotate(360deg)}}}}
 .nav{{position:relative;z-index:2;margin:18px auto 0;max-width:calc(100% - 32px);display:flex;align-items:center;gap:14px;padding:6px 6px 6px 20px;border-radius:999px;background:rgba(10,10,15,.55);border:1px solid rgba(255,255,255,.08);backdrop-filter:blur(14px)}}
-.logo{{font:800 18px Unbounded,system-ui,sans-serif;background:linear-gradient(90deg,#fff,var(--a));-webkit-background-clip:text;color:transparent;white-space:nowrap}}
+.logo{{font:800 18px Unbounded,system-ui,sans-serif;background:linear-gradient(90deg,#fff,var(--a));-webkit-background-clip:text;color:transparent;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1}}
+.nav .btn{{flex:none}}
+h1,h2,th,td,.ol{{overflow-wrap:break-word;hyphens:auto}}
 .nav .btn{{height:40px;padding:0 16px;font-size:14px}}
 .hc{{width:100%;position:relative;z-index:2;margin-top:auto;padding-bottom:44px}}
 .badge{{display:inline-flex;align-items:center;gap:10px;padding:5px 14px 5px 5px;border-radius:999px;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.08);font-size:13px;color:rgba(255,255,255,.75);max-width:100%}}
@@ -187,7 +92,8 @@ td.us{{color:var(--a);font-weight:700}}
 .final h2{{font-size:clamp(40px,12vw,64px)}}
 .ol{{display:flex;justify-content:space-between;align-items:center;padding:20px 4px;border-top:1px solid rgba(255,255,255,.08);font:800 24px Unbounded}}
 .ol span{{color:var(--a);transition:transform .2s}}.ol:active span{{transform:translateX(6px)}}
-footer{{padding:40px 0 calc(40px + env(safe-area-inset-bottom));color:rgba(255,255,255,.35);font-size:13px;display:flex;justify-content:space-between}}
+footer{{padding:40px 0 calc(40px + env(safe-area-inset-bottom));color:rgba(255,255,255,.35);font-size:13px;display:flex;justify-content:space-between;gap:16px}}
+footer a{{color:rgba(255,255,255,.6);white-space:nowrap}}footer a:hover{{color:var(--a)}}
 .ov{{position:fixed;inset:0;z-index:40;display:grid;place-items:center;background:var(--bg);opacity:0;pointer-events:none;transition:opacity .25s}}
 .ov.on{{opacity:1;pointer-events:auto}}
 .ov div{{font:900 {fs}/.92 Unbounded,system-ui,sans-serif;letter-spacing:-.05em;text-align:center;padding:20px;background:linear-gradient(180deg,#fff,var(--a));-webkit-background-clip:text;color:transparent;transform:scale(.6);transition:transform .45s cubic-bezier(.2,1.6,.4,1)}}
@@ -247,7 +153,7 @@ table{{font-size:20px}}td{{padding:24px 12px}}th{{font-size:13px;padding:0 12px 
 <ul><li>Безлимит использований</li><li>Без подписки и SMS</li><li>Работает офлайн</li></ul><br><button class="btn btn-w" data-go>{p["cta"]} →</button></div></section>
 <div class="final rev"><h2>{p["final"]}</h2><button class="btn btn-w" data-go>{p["cta"]} →</button></div>
 <section class="rev" style="padding-top:20px"><div class="eyebrow">{p["others"]}</div><div class="ols">{olinks}<a class="ol" href="../">Все ответы<span>→</span></a></div></section>
-<footer><span>© 2026 {p["word"]} Inc.</span><span>Ответ без лишних слов</span></footer>
+<footer><span>© 2026 {p["word"]} Inc.</span><a href="{STUDIO}">Сделано в NЁRD</a></footer>
 </main>
 <div class="ov" id="ov"><div>{p["word"]}{p["dot"]}</div><small>Нажми, чтобы закрыть</small></div>
 <div class="sheet" id="sh"><h3>Задай любой вопрос</h3><input id="q" placeholder="Например: а можно…?" enterkeyhint="send"><div class="ans" id="an"></div><button class="btn btn-w" id="qa">Получить ответ →</button></div>
@@ -265,7 +171,7 @@ document.querySelectorAll('.rev').forEach(el=>io.observe(el));
 
 hub_items = "".join(f'<a href="{p["slug"]}/" style="--a:{p["a"]};--b:{p["b"]}"><span>{p["word"]}{p["dot"]}</span><i>→</i></a>' for p in PAGES)
 hub = f"""<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Ответы — выбери свой</title><meta property="og:title" content="Выбери свой ответ"><meta property="og:description" content="11 ответов на все случаи жизни."><meta property="og:image" content="{BASE}og.png"><meta name="twitter:card" content="summary_large_image">{FONTS}<style>:root{{--bg:#09090b}}{BASE_CSS}
+<title>Ответы — выбери свой</title><meta property="og:title" content="Выбери свой ответ"><meta property="og:description" content="{len(PAGES)} ответов на все случаи жизни."><meta property="og:image" content="{BASE}og.png"><meta name="twitter:card" content="summary_large_image">{FONTS}<style>:root{{--bg:#09090b}}{BASE_CSS}
 main.wrap{{min-height:100svh;display:flex;flex-direction:column;padding-top:48px}}
 .eyebrow{{font:500 12px Unbounded,system-ui,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.45)}}
 h1{{font:900 clamp(44px,13vw,72px)/.95 Unbounded,system-ui,sans-serif;letter-spacing:-.04em;margin:14px 0 36px}}
@@ -278,8 +184,12 @@ footer{{margin-top:auto;padding:40px 0 calc(32px + env(safe-area-inset-bottom));
 @media (min-width:900px){{.wrap{{max-width:1240px;padding:0 56px}}main.wrap{{padding-top:96px}}h1{{font-size:clamp(72px,8vw,128px);margin-bottom:64px}}
 .list{{display:grid;grid-template-columns:1fr 1fr;column-gap:56px}}.list a{{font-size:clamp(36px,3.4vw,52px);padding:32px 0}}footer{{font-size:15px}}}}
 </style></head><body><div class="grain"></div><main class="wrap"><div class="eyebrow">Ответы как сервис</div><h1>Выбери<br>свой ответ.</h1>
-<div class="list">{hub_items}</div><footer>Каждый ответ — отдельная страница. Кидай ссылку вместо слов.</footer></main></body></html>"""
-open("index.html","w").write(hub)
+<div class="list">{hub_items}</div><footer>Каждый ответ — отдельная страница. Кидай ссылку вместо слов.<br><a href="{STUDIO}" style="color:rgba(255,255,255,.6)">Сделано в NЁRD</a></footer></main></body></html>"""
+open("index.html","w",encoding="utf-8").write(hub)
 for p in PAGES:
-    os.makedirs(""+p["slug"],exist_ok=True); open(""+p["slug"]+"/index.html","w").write(page(p))
-json.dump([dict(slug=p["slug"],word=p["word"],dot=p["dot"],a=p["a"],b=p["b"],bg=p["bg"],tag=p["tag"]) for p in PAGES],open("_project/pages.json","w"),ensure_ascii=False)
+    os.makedirs(p["slug"],exist_ok=True); open(p["slug"]+"/index.html","w",encoding="utf-8").write(page(p))
+# Публичный список для бота (и для og.py): только то, что нужно снаружи.
+pub=[dict(slug=p["slug"],word=p["word"],dot=p["dot"],a=p["a"],b=p["b"],bg=p["bg"],tag=p["tag"],keywords=p["keywords"],top=p["top"]) for p in PAGES]
+for out in ("answers.json","_bot/supabase/functions/otvety-bot/answers.json"):
+    os.makedirs(os.path.dirname(out) or ".",exist_ok=True)
+    json.dump(pub,open(out,"w",encoding="utf-8"),ensure_ascii=False)

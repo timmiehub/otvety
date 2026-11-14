@@ -3,7 +3,7 @@
 <title>Сам дурак. — Аргумент, проверенный школой.</title>
 <meta name="description" content="Аргумент, проверенный школой."><meta property="og:type" content="website">
 <meta property="og:title" content="Сам дурак."><meta property="og:description" content="Аргумент, проверенный школой.">
-<meta property="og:image" content="https://timmiehub.github.io/otvety/sam-durak/og.png"><meta property="og:url" content="https://timmiehub.github.io/otvety/sam-durak/">
+<meta property="og:image" content="https://otvety.nerdstudio.dev/sam-durak/og.png"><meta property="og:url" content="https://otvety.nerdstudio.dev/sam-durak/">
 <meta name="twitter:card" content="summary_large_image"><meta name="theme-color" content="#0f0a06"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;800;900&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
 <style>:root{--a:#e8bd8f;--b:#9a5f26;--bg:#0f0a06}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -26,7 +26,9 @@ a{color:inherit;text-decoration:none}
 .ring:after{content:"";position:absolute;inset:14%;border-radius:50%;border:1px dashed color-mix(in srgb,var(--a) 25%,transparent);animation:spin 40s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .nav{position:relative;z-index:2;margin:18px auto 0;max-width:calc(100% - 32px);display:flex;align-items:center;gap:14px;padding:6px 6px 6px 20px;border-radius:999px;background:rgba(10,10,15,.55);border:1px solid rgba(255,255,255,.08);backdrop-filter:blur(14px)}
-.logo{font:800 18px Unbounded,system-ui,sans-serif;background:linear-gradient(90deg,#fff,var(--a));-webkit-background-clip:text;color:transparent;white-space:nowrap}
+.logo{font:800 18px Unbounded,system-ui,sans-serif;background:linear-gradient(90deg,#fff,var(--a));-webkit-background-clip:text;color:transparent;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1}
+.nav .btn{flex:none}
+h1,h2,th,td,.ol{overflow-wrap:break-word;hyphens:auto}
 .nav .btn{height:40px;padding:0 16px;font-size:14px}
 .hc{width:100%;position:relative;z-index:2;margin-top:auto;padding-bottom:44px}
 .badge{display:inline-flex;align-items:center;gap:10px;padding:5px 14px 5px 5px;border-radius:999px;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.08);font-size:13px;color:rgba(255,255,255,.75);max-width:100%}
@@ -68,7 +70,8 @@ td.us{color:var(--a);font-weight:700}
 .final h2{font-size:clamp(40px,12vw,64px)}
 .ol{display:flex;justify-content:space-between;align-items:center;padding:20px 4px;border-top:1px solid rgba(255,255,255,.08);font:800 24px Unbounded}
 .ol span{color:var(--a);transition:transform .2s}.ol:active span{transform:translateX(6px)}
-footer{padding:40px 0 calc(40px + env(safe-area-inset-bottom));color:rgba(255,255,255,.35);font-size:13px;display:flex;justify-content:space-between}
+footer{padding:40px 0 calc(40px + env(safe-area-inset-bottom));color:rgba(255,255,255,.35);font-size:13px;display:flex;justify-content:space-between;gap:16px}
+footer a{color:rgba(255,255,255,.6);white-space:nowrap}footer a:hover{color:var(--a)}
 .ov{position:fixed;inset:0;z-index:40;display:grid;place-items:center;background:var(--bg);opacity:0;pointer-events:none;transition:opacity .25s}
 .ov.on{opacity:1;pointer-events:auto}
 .ov div{font:900 min(17.5vw,91px)/.92 Unbounded,system-ui,sans-serif;letter-spacing:-.05em;text-align:center;padding:20px;background:linear-gradient(180deg,#fff,var(--a));-webkit-background-clip:text;color:transparent;transform:scale(.6);transition:transform .45s cubic-bezier(.2,1.6,.4,1)}
@@ -127,8 +130,8 @@ table{font-size:20px}td{padding:24px 12px}th{font-size:13px;padding:0 12px 16px}
 <section class="rev"><div class="price"><div class="eyebrow">Тариф</div><div class="big">0 ₽</div><p>Бесплатно. Сам такой.</p>
 <ul><li>Безлимит использований</li><li>Без подписки и SMS</li><li>Работает офлайн</li></ul><br><button class="btn btn-w" data-go>Получить «Сам дурак» →</button></div></section>
 <div class="final rev"><h2>Отзеркаль.</h2><button class="btn btn-w" data-go>Получить «Сам дурак» →</button></div>
-<section class="rev" style="padding-top:20px"><div class="eyebrow">Аргументы кончились? Есть ещё</div><div class="ols"><a class="ol" href="../da/">Да<span>→</span></a><a class="ol" href="../net/">Нет<span>→</span></a><a class="ol" href="../ne-znayu/">Не знаю<span>→</span></a><a class="ol" href="../nahuy/">Иди нахуй<span>→</span></a><a class="ol" href="../mozhet-byt/">Может быть<span>→</span></a><a class="ol" href="../ya-podumayu/">Я подумаю<span>→</span></a><a class="ol" href="../ok/">Ок<span>→</span></a><a class="ol" href="../otstan/">Отстань<span>→</span></a><a class="ol" href="../pohuy/">Похуй<span>→</span></a><a class="ol" href="../huynya/">Хуйня<span>→</span></a><a class="ol" href="../">Все ответы<span>→</span></a></div></section>
-<footer><span>© 2026 Сам дурак Inc.</span><span>Ответ без лишних слов</span></footer>
+<section class="rev" style="padding-top:20px"><div class="eyebrow">Аргументы кончились? Есть ещё</div><div class="ols"><a class="ol" href="../da/">Да<span>→</span></a><a class="ol" href="../net/">Нет<span>→</span></a><a class="ol" href="../ne-znayu/">Не знаю<span>→</span></a><a class="ol" href="../nahuy/">Иди нахуй<span>→</span></a><a class="ol" href="../mozhet-byt/">Может быть<span>→</span></a><a class="ol" href="../ya-podumayu/">Я подумаю<span>→</span></a><a class="ol" href="../ok/">Ок<span>→</span></a><a class="ol" href="../otstan/">Отстань<span>→</span></a><a class="ol" href="../pohuy/">Похуй<span>→</span></a><a class="ol" href="../huynya/">Хуйня<span>→</span></a><a class="ol" href="../soglasovano/">Согласовано<span>→</span></a><a class="ol" href="../ne-soglasovano/">Не согласовано<span>→</span></a><a class="ol" href="../srochno/">Срочно<span>→</span></a><a class="ol" href="../pozzhe/">Позже<span>→</span></a><a class="ol" href="../ne-moya-zona/">Не моя зона ответственности<span>→</span></a><a class="ol" href="../u-menya-rabotaet/">У меня работает<span>→</span></a><a class="ol" href="../ne-bag-a-ficha/">Это не баг, это фича<span>→</span></a><a class="ol" href="../sozvonimsya/">Давай созвонимся<span>→</span></a><a class="ol" href="../prishli-pismenno/">Пришли письменно<span>→</span></a><a class="ol" href="../krasava/">Красава<span>→</span></a><a class="ol" href="../spasibo-ne-nado/">Спасибо, не надо<span>→</span></a><a class="ol" href="../v-pyatnicu-ne-deploim/">В пятницу не деплоим<span>→</span></a><a class="ol" href="../otebis/">Отъебись<span>→</span></a><a class="ol" href="../ladno/">Ладно<span>→</span></a><a class="ol" href="../">Все ответы<span>→</span></a></div></section>
+<footer><span>© 2026 Сам дурак Inc.</span><a href="https://nerdstudio.dev/?utm_source=otvety&utm_medium=referral">Сделано в NЁRD</a></footer>
 </main>
 <div class="ov" id="ov"><div>Сам дурак.</div><small>Нажми, чтобы закрыть</small></div>
 <div class="sheet" id="sh"><h3>Задай любой вопрос</h3><input id="q" placeholder="Например: а можно…?" enterkeyhint="send"><div class="ans" id="an"></div><button class="btn btn-w" id="qa">Получить ответ →</button></div>

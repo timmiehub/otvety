@@ -75,12 +75,41 @@ footer{padding:40px 0 calc(40px + env(safe-area-inset-bottom));color:rgba(255,25
 .ov.on div{transform:scale(1)}
 .ov small{position:absolute;bottom:40px;color:rgba(255,255,255,.4);font-size:13px}
 .sheet{position:fixed;left:0;right:0;bottom:0;z-index:41;padding:28px 20px calc(28px + env(safe-area-inset-bottom));background:#151518;border-radius:28px 28px 0 0;transform:translateY(100%);transition:transform .35s cubic-bezier(.2,.9,.3,1)}
-.sheet.on{transform:none}
+.sheet{visibility:hidden}.sheet.on{transform:none;visibility:visible}
 .sheet input{width:100%;height:56px;border-radius:16px;border:1px solid rgba(255,255,255,.12);background:#0c0c0e;color:#fff;font:500 16px Manrope,system-ui,sans-serif;padding:0 18px;margin:14px 0}
 .sheet h3{font:800 20px Unbounded}
 .ans{font:800 22px Unbounded,system-ui,sans-serif;color:var(--a);min-height:30px;margin-bottom:14px}
 .rev{opacity:0;transform:translateY(24px);transition:opacity .7s,transform .7s}.rev.in{opacity:1;transform:none}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (hover:hover){.btn:hover{transform:translateY(-2px)}.btn-w:hover{box-shadow:0 10px 40px -10px var(--a)}.btn-g:hover{background:rgba(255,255,255,.12)}
+.card{transition:border-color .25s,transform .25s}.card:hover{border-color:color-mix(in srgb,var(--a) 45%,transparent);transform:translateY(-4px)}
+.ol:hover span{transform:translateX(8px)}.ol:hover{color:var(--a)}}
+@media (min-width:900px){
+.wrap{max-width:1240px;padding:0 56px}
+.nav{margin-top:28px}
+.o1{width:1100px;height:1100px;max-width:none;max-height:none;right:-260px;top:-200px}
+.o2{width:700px;height:700px;max-width:none;max-height:none;left:-200px;top:auto;bottom:-300px}
+.ring{width:760px;max-width:none;right:-120px;top:6%}
+.hc{padding-bottom:88px}
+h1{font-size:min(21.1vw,295px);margin:26px 0 22px -.04em}
+.tag{font-size:30px;margin-bottom:40px;max-width:700px}
+.btn{height:60px;padding:0 30px;font-size:17px}
+.nav .btn{height:42px;font-size:14px}
+.badge{font-size:14px}
+.marq{padding:26px 0}.marq div{font-size:44px;gap:44px}
+section{padding-top:140px}
+h2{font-size:clamp(48px,5vw,76px);margin-bottom:48px}
+.feats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.feats .card{margin:0;padding:32px;min-height:300px;display:flex;flex-direction:column}
+.card .num{margin-bottom:auto}.card h3{font-size:24px;margin-top:60px}.card p{font-size:17px}
+.stats{grid-template-columns:repeat(3,1fr);gap:16px}.stat{min-height:240px;padding:32px}.stat:nth-child(3){grid-column:auto}.stat b{font-size:72px}.stat span{font-size:17px}
+table{font-size:20px}td{padding:24px 12px}th{font-size:13px;padding:0 12px 16px}
+.price{max-width:680px;margin:0 auto;padding:64px 48px}.price .big{font-size:120px}.price p{font-size:22px}
+.final{padding:180px 0 80px}.final h2{font-size:clamp(80px,10vw,150px);margin-bottom:56px}
+.ols{display:grid;grid-template-columns:1fr 1fr;column-gap:48px}.ol{font-size:32px;padding:28px 4px}
+.sheet{left:50%;right:auto;bottom:32px;width:520px;transform:translate(-50%,calc(100% + 40px));border-radius:28px;border:1px solid rgba(255,255,255,.1)}
+.sheet.on{transform:translate(-50%,0)}
+.ov div{font-size:min(21.1vw,295px)}
+}
 </style></head><body>
 <div class="grain"></div>
 <header class="hero"><div class="orb o1"></div><div class="orb o2"></div><div class="ring"></div>
@@ -91,14 +120,14 @@ footer{padding:40px 0 calc(40px + env(safe-area-inset-bottom));color:rgba(255,25
 <div class="row"><button class="btn btn-w" data-go>Получить «Не знаю» →</button><button class="btn btn-g" data-ask>Подумать ещё</button></div></div></header>
 <div class="marq"><div><span>Не знаю…</span><i>✦</i> <span>Не знаю…</span><i>✦</i> <span>Не знаю…</span><i>✦</i> <span>Не знаю…</span><i>✦</i> <span>Не знаю…</span><i>✦</i> <span>Не знаю…</span><i>✦</i> <span>Не знаю…</span><i>✦</i> <span>Не знаю…</span><i>✦</i><span>Не знаю…</span><i>✦</i> <span>Не знаю…</span><i>✦</i> <span>Не знаю…</span><i>✦</i> <span>Не знаю…</span><i>✦</i> <span>Не знаю…</span><i>✦</i> <span>Не знаю…</span><i>✦</i> <span>Не знаю…</span><i>✦</i> <span>Не знаю…</span><i>✦</i></div></div>
 <main class="wrap">
-<section class="rev"><div class="eyebrow">Почему «Не знаю»</div><h2>Один ответ.<br>Ноль вопросов.</h2><div class="card"><div class="num">01</div><h3>Нулевая ответственность</h3><p>Ничего не обещал — ничего не должен.</p></div><div class="card"><div class="num">02</div><h3>Подходит на любой вопрос</h3><p>От «куда пойдём ужинать» до смысла жизни.</p></div><div class="card"><div class="num">03</div><h3>Снимает ожидания</h3><p>Никто не разочарован, потому что никто ничего не ждал.</p></div></section>
+<section class="rev"><div class="eyebrow">Почему «Не знаю»</div><h2>Один ответ.<br>Ноль вопросов.</h2><div class="feats"><div class="card"><div class="num">01</div><h3>Нулевая ответственность</h3><p>Ничего не обещал — ничего не должен.</p></div><div class="card"><div class="num">02</div><h3>Подходит на любой вопрос</h3><p>От «куда пойдём ужинать» до смысла жизни.</p></div><div class="card"><div class="num">03</div><h3>Снимает ожидания</h3><p>Никто не разочарован, потому что никто ничего не ждал.</p></div></div></section>
 <section class="rev"><div class="eyebrow">В цифрах</div><h2>Проверено<br>на людях.</h2><div class="stats"><div class="stat"><b>50/50</b><span>точность</span></div><div class="stat"><b>∞</b><span>времени на раздумья</span></div><div class="stat"><b>0</b><span>ошибок за всю историю</span></div></div></section>
 <section class="rev"><div class="eyebrow">Сравнение</div><h2>«Не знаю» vs «Уверенный бред»</h2>
 <table><tr><th></th><th class="us">Не знаю</th><th>Уверенный бред</th></tr><tr><td>Честность</td><td class="us">100%</td><td>0%</td></tr><tr><td>Риск опозориться</td><td class="us">минимальный</td><td>высокий</td></tr><tr><td>Выглядит умно</td><td class="us">почему-то да</td><td>до первой проверки</td></tr></table></section>
 <section class="rev"><div class="price"><div class="eyebrow">Тариф</div><div class="big">0 ₽</div><p>Цена? Без понятия.</p>
 <ul><li>Безлимит использований</li><li>Без подписки и SMS</li><li>Работает офлайн</li></ul><br><button class="btn btn-w" data-go>Получить «Не знаю» →</button></div></section>
 <div class="final rev"><h2>Пожми плечами.</h2><button class="btn btn-w" data-go>Получить «Не знаю» →</button></div>
-<section class="rev" style="padding-top:20px"><div class="eyebrow">Может, другой ответ?</div><a class="ol" href="../da/">Да<span>→</span></a><a class="ol" href="../net/">Нет<span>→</span></a><a class="ol" href="../nahuy/">Иди нахуй<span>→</span></a><a class="ol" href="../mozhet-byt/">Может быть<span>→</span></a><a class="ol" href="../ya-podumayu/">Я подумаю<span>→</span></a><a class="ol" href="../ok/">Ок<span>→</span></a><a class="ol" href="../otstan/">Отстань<span>→</span></a><a class="ol" href="../pohuy/">Похуй<span>→</span></a><a class="ol" href="../sam-durak/">Сам дурак<span>→</span></a><a class="ol" href="../">Все ответы<span>→</span></a></section>
+<section class="rev" style="padding-top:20px"><div class="eyebrow">Может, другой ответ?</div><div class="ols"><a class="ol" href="../da/">Да<span>→</span></a><a class="ol" href="../net/">Нет<span>→</span></a><a class="ol" href="../nahuy/">Иди нахуй<span>→</span></a><a class="ol" href="../mozhet-byt/">Может быть<span>→</span></a><a class="ol" href="../ya-podumayu/">Я подумаю<span>→</span></a><a class="ol" href="../ok/">Ок<span>→</span></a><a class="ol" href="../otstan/">Отстань<span>→</span></a><a class="ol" href="../pohuy/">Похуй<span>→</span></a><a class="ol" href="../sam-durak/">Сам дурак<span>→</span></a><a class="ol" href="../">Все ответы<span>→</span></a></div></section>
 <footer><span>© 2026 Не знаю Inc.</span><span>Ответ без лишних слов</span></footer>
 </main>
 <div class="ov" id="ov"><div>Не знаю…</div><small>Нажми, чтобы закрыть</small></div>

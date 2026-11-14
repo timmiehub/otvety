@@ -182,9 +182,12 @@ async function handle(u: any): Promise<unknown | null> {
   const m = u.message;
   if (m && m.chat?.type === "private") {
     const isStart = typeof m.text === "string" && m.text.startsWith("/start");
-    // «/start a_<slug>» — пришёл с кнопки под карточкой: сразу открываем группу этого ответа.
-    const from = isStart ? list.find((a) => m.text.trim() === `/start a_${a.slug}`) : undefined;
-    if (isStart) later(log("start", m.from?.id, from?.slug ?? null));
+    // Метка источника из ссылки t.me/<бот>?start=<метка>:
+    //   a_<slug> — кнопка под карточкой в чате, w_<slug> — лендинг ответа, w_hub — главная сайта, r_<код> — ролик.
+    // Для a_/w_ с ответом сразу открываем его группу. Метку пишем в query_text, ответ — в answer_slug.
+    const payload: string = isStart ? (m.text.split(" ")[1] ?? "").slice(0, 64) : "";
+    const from = /^[aw]_/.test(payload) ? list.find((a) => payload.slice(2) === a.slug) : undefined;
+    if (isStart) later(log("start", m.from?.id, from?.slug ?? null, payload || undefined));
     return {
       method: "sendMessage",
       chat_id: m.chat.id,

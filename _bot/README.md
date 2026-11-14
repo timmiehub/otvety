@@ -25,8 +25,13 @@ Supabase-проект **otvety** (`octsacjesrnqzodzjsqg`, Франкфурт). �
 2. `python _project/gen.py` (с `BASE_URL=https://otvety.nerdstudio.dev/`), затем `python _project/og.py` (переменная `FONTS`).
 3. git push. Если менялся `search.ts`/`index.ts` — передеплоить функцию.
 
+## Метки источников
+Ссылка `t.me/vototvet_app?start=<метка>`: `a_<slug>` — кнопка под карточкой, `w_<slug>` — лендинг ответа,
+`w_hub` — главная, `r_<код>` — ролик (код латиницей, до 20 символов). Метка пишется в `events.query_text` у события `start`.
+
 ## Статистика (SQL Editor)
 ```sql
 select * from stats_daily limit 14;   -- отправки, отправители, запросы, /start по дням
 select * from stats_top;              -- топ ответов
+select * from stats_sources;          -- откуда пришли в бота: карточка в чате / лендинг / главная / ролик
 ```

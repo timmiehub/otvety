@@ -3,6 +3,9 @@ import json, os
 # Адрес сайта. Меняется только здесь (и в секрете BASE_URL у бота).
 BASE = os.environ.get("BASE_URL", "https://timmiehub.github.io/otvety/")
 STUDIO = "https://nerdstudio.dev/?utm_source=otvety&utm_medium=referral"
+# Бот. Метка start: w_<slug> — пришёл с лендинга ответа, w_hub — с главной.
+BOT = "vototvet_app"
+tg = lambda tag: f"https://t.me/{BOT}?start={tag}"
 # Все ответы — в _project/answers.json (один источник для сайта и бота).
 PAGES = json.load(open("_project/answers.json", encoding="utf-8"))
 ALL = [(p["slug"],p["word"]) for p in PAGES]
@@ -18,7 +21,13 @@ a{color:inherit;text-decoration:none}
 .btn:active{transform:scale(.96)}
 .btn-w{background:#fff;color:#0a0a0a}
 .btn-g{background:rgba(255,255,255,.06);color:#fff;border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(10px)}
+.tg{display:flex;align-items:center;justify-content:center;gap:10px;height:56px;padding:0 22px;border-radius:999px;background:#2aabee;color:#fff;font:700 16px Manrope,system-ui,sans-serif;white-space:nowrap;box-shadow:0 10px 40px -12px #2aabee}
+.tg svg{width:22px;height:22px;flex:none}
+.tgbar{position:fixed;left:16px;right:16px;bottom:calc(14px + env(safe-area-inset-bottom));z-index:30;transition:transform .3s,opacity .3s}
+.tgbar.off{transform:translateY(140%);opacity:0;pointer-events:none}
+@media (min-width:900px){.tgbar{left:auto;right:32px;bottom:32px}}
 """
+TG_ICON = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.9 4.3 18.7 19.4c-.2 1-.9 1.3-1.7.8l-4.8-3.5-2.3 2.2c-.3.3-.5.5-1 .5l.3-4.9 8.9-8c.4-.3-.1-.5-.6-.2L6.5 13.2 1.8 11.7c-1-.3-1-1 .2-1.5L20.5 3.1c.9-.3 1.6.2 1.4 1.2z"/></svg>'
 def page(p):
     other = [x for x in ALL if x[0]!=p["slug"]]
     feats = "".join(f'<div class="card"><div class="num">0{i+1}</div><h3>{t}</h3><p>{d}</p></div>' for i,(t,d) in enumerate(p["feats"]))
@@ -50,9 +59,9 @@ def page(p):
 .nav{{position:relative;z-index:2;margin:18px auto 0;max-width:calc(100% - 32px);display:flex;align-items:center;gap:14px;padding:6px 6px 6px 20px;border-radius:999px;background:rgba(10,10,15,.55);border:1px solid rgba(255,255,255,.08);backdrop-filter:blur(14px)}}
 .logo{{font:800 18px Unbounded,system-ui,sans-serif;background:linear-gradient(90deg,#fff,var(--a));-webkit-background-clip:text;color:transparent;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1}}
 .nav .btn{{flex:none}}
-h1,h2,th,td,.ol{{overflow-wrap:break-word;hyphens:auto}}
+h1{{overflow-wrap:break-word}}h2,th,td,.ol{{overflow-wrap:break-word;hyphens:auto}}
 .nav .btn{{height:40px;padding:0 16px;font-size:14px}}
-.hc{{width:100%;position:relative;z-index:2;margin-top:auto;padding-bottom:44px}}
+.hc{{width:100%;position:relative;z-index:2;margin-top:auto;padding-bottom:104px}}
 .badge{{display:inline-flex;align-items:center;gap:10px;padding:5px 14px 5px 5px;border-radius:999px;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.08);font-size:13px;color:rgba(255,255,255,.75);max-width:100%}}
 .badge b{{font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px;background:linear-gradient(90deg,var(--a),var(--b));color:#0a0a0a;flex:none}}
 .badge span{{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
@@ -92,7 +101,7 @@ td.us{{color:var(--a);font-weight:700}}
 .final h2{{font-size:clamp(40px,12vw,64px)}}
 .ol{{display:flex;justify-content:space-between;align-items:center;padding:20px 4px;border-top:1px solid rgba(255,255,255,.08);font:800 24px Unbounded}}
 .ol span{{color:var(--a);transition:transform .2s}}.ol:active span{{transform:translateX(6px)}}
-footer{{padding:40px 0 calc(40px + env(safe-area-inset-bottom));color:rgba(255,255,255,.35);font-size:13px;display:flex;justify-content:space-between;gap:16px}}
+footer{{padding:40px 0 calc(100px + env(safe-area-inset-bottom));color:rgba(255,255,255,.35);font-size:13px;display:flex;justify-content:space-between;gap:16px}}
 footer a{{color:rgba(255,255,255,.6);white-space:nowrap}}footer a:hover{{color:var(--a)}}
 .ov{{position:fixed;inset:0;z-index:40;display:grid;place-items:center;background:var(--bg);opacity:0;pointer-events:none;transition:opacity .25s}}
 .ov.on{{opacity:1;pointer-events:auto}}
@@ -155,12 +164,14 @@ table{{font-size:20px}}td{{padding:24px 12px}}th{{font-size:13px;padding:0 12px 
 <section class="rev" style="padding-top:20px"><div class="eyebrow">{p["others"]}</div><div class="ols">{olinks}<a class="ol" href="../">Все ответы<span>→</span></a></div></section>
 <footer><span>© 2026 {p["word"]} Inc.</span><a href="{STUDIO}">Сделано в NЁRD</a></footer>
 </main>
+<a class="tg tgbar" id="tgb" href="{tg("w_"+p["slug"])}">{TG_ICON}Ответить так же в Telegram</a>
 <div class="ov" id="ov"><div>{p["word"]}{p["dot"]}</div><small>Нажми, чтобы закрыть</small></div>
 <div class="sheet" id="sh"><h3>Задай любой вопрос</h3><input id="q" placeholder="Например: а можно…?" enterkeyhint="send"><div class="ans" id="an"></div><button class="btn btn-w" id="qa">Получить ответ →</button></div>
 <script>
 const ov=document.getElementById('ov'),sh=document.getElementById('sh'),q=document.getElementById('q'),an=document.getElementById('an');
 document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{{sh.classList.remove('on');ov.classList.add('on');try{{navigator.vibrate&&navigator.vibrate(60)}}catch(e){{}}}});
 ov.onclick=()=>ov.classList.remove('on');
+const tgb=document.getElementById('tgb'),syncTg=()=>tgb.classList.toggle('off',ov.classList.contains('on')||sh.classList.contains('on'));[ov,sh].forEach(el=>new MutationObserver(syncTg).observe(el,{{attributes:true}}));
 document.querySelectorAll('[data-ask]').forEach(b=>b.onclick=()=>{{an.textContent='';sh.classList.add('on');setTimeout(()=>q.focus(),300)}});
 const go=()=>{{an.textContent='Думаю…';setTimeout(()=>an.textContent={json.dumps(p["word"]+p["dot"])},700)}};
 document.getElementById('qa').onclick=go;q.onkeydown=e=>{{if(e.key==='Enter')go()}};
@@ -173,6 +184,7 @@ hub_items = "".join(f'<a href="{p["slug"]}/" style="--a:{p["a"]};--b:{p["b"]}"><
 hub = f"""<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Ответы — выбери свой</title><meta property="og:title" content="Выбери свой ответ"><meta property="og:description" content="{len(PAGES)} ответов на все случаи жизни."><meta property="og:image" content="{BASE}og.png"><meta name="twitter:card" content="summary_large_image">{FONTS}<style>:root{{--bg:#09090b}}{BASE_CSS}
 main.wrap{{min-height:100svh;display:flex;flex-direction:column;padding-top:48px}}
+.hubtg{{align-self:flex-start;margin:-12px 0 36px}}
 .eyebrow{{font:500 12px Unbounded,system-ui,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.45)}}
 h1{{font:900 clamp(44px,13vw,72px)/.95 Unbounded,system-ui,sans-serif;letter-spacing:-.04em;margin:14px 0 36px}}
 .list a{{display:flex;justify-content:space-between;align-items:center;padding:26px 0;border-top:1px solid rgba(255,255,255,.1);font:800 clamp(30px,9vw,44px) Unbounded,system-ui,sans-serif;letter-spacing:-.03em;transition:padding .2s}}
@@ -183,7 +195,7 @@ footer{{margin-top:auto;padding:40px 0 calc(32px + env(safe-area-inset-bottom));
 @media (hover:hover){{.list a:hover{{padding-left:14px}}.list a:hover i{{transform:translateX(6px)}}.list a i{{transition:transform .2s}}}}
 @media (min-width:900px){{.wrap{{max-width:1240px;padding:0 56px}}main.wrap{{padding-top:96px}}h1{{font-size:clamp(72px,8vw,128px);margin-bottom:64px}}
 .list{{display:grid;grid-template-columns:1fr 1fr;column-gap:56px}}.list a{{font-size:clamp(36px,3.4vw,52px);padding:32px 0}}footer{{font-size:15px}}}}
-</style></head><body><div class="grain"></div><main class="wrap"><div class="eyebrow">Ответы как сервис</div><h1>Выбери<br>свой ответ.</h1>
+</style></head><body><div class="grain"></div><main class="wrap"><div class="eyebrow">Ответы как сервис</div><h1>Выбери<br>свой ответ.</h1><a class="tg hubtg" href="{tg("w_hub")}">{TG_ICON}Отвечать в Telegram</a>
 <div class="list">{hub_items}</div><footer>Каждый ответ — отдельная страница. Кидай ссылку вместо слов.<br><a href="{STUDIO}" style="color:rgba(255,255,255,.6)">Сделано в NЁRD</a></footer></main></body></html>"""
 open("index.html","w",encoding="utf-8").write(hub)
 for p in PAGES:

@@ -36,7 +36,7 @@ async function getAnswers(): Promise<Answer[]> {
   return answers;
 }
 
-import { search } from "./search.ts";
+import { GROUPS, search } from "./search.ts";
 
 // ---------- Telegram ----------
 const tg = (method: string, body: unknown) =>
@@ -113,14 +113,28 @@ const later = (p: Promise<unknown>) => {
 // ---------- личка ----------
 async function helpText(n: number) {
   const name = await botName();
-  return `Отвечай одним словом — красиво.\n\nВ любом чате напиши @${name} и выбери ответ: «Да», «Нет», «У меня работает», «В пятницу не деплоим» и ещё ${n - 4}. В чат уйдёт ссылка с большой карточкой.\n\nИли нажми ответ ниже — пришлю сюда, отправишь кому надо.`;
+  return `Отвечай одним словом — красиво.
+
+В любом чате напиши @${name} и выбери ответ: «Да», «Нет», «У меня работает», «В пятницу не деплоим» и ещё ${n - 4}. В чат уйдёт ссылка с большой карточкой.
+
+Или выбери группу ниже — пришлю ответ сюда, отправишь кому надо.`;
 }
 const tryButton = { text: "Попробовать в чате", switch_inline_query: "" };
-function grid(list: Answer[]) {
+// Главное меню: группы по две в ряд.
+function groupsMenu(list: Answer[]) {
+  const btns = GROUPS.map((g) => ({ text: `${g.title} · ${list.filter((a) => a.group === g.id).length}`, callback_data: "g:" + g.id }));
   const rows: unknown[][] = [[tryButton]];
-  for (let i = 0; i < list.length; i += 2) {
-    rows.push(list.slice(i, i + 2).map((a) => ({ text: a.word + a.dot, callback_data: "a:" + a.slug })));
+  for (let i = 0; i < btns.length; i += 2) rows.push(btns.slice(i, i + 2));
+  return { inline_keyboard: rows };
+}
+// Ответы одной группы + «назад».
+function groupMenu(list: Answer[], groupId: string) {
+  const items = list.filter((a) => a.group === groupId);
+  const rows: unknown[][] = [];
+  for (let i = 0; i < items.length; i += 2) {
+    rows.push(items.slice(i, i + 2).map((a) => ({ text: a.word + a.dot, callback_data: "a:" + a.slug })));
   }
+  rows.push([{ text: "← Все группы", callback_data: "back" }]);
   return { inline_keyboard: rows };
 }
 
@@ -132,7 +146,8 @@ async function handle(u: any): Promise<unknown | null> {
   if (u.inline_query) {
     const q: string = u.inline_query.query ?? "";
     later(log("inline_query", u.inline_query.from?.id, null, q));
-    const found = search(list, q).slice(0, 50);
+    // Пустой запрос — топ-12, чтобы не вываливать весь список; по запросу — до 50 совпадений.
+    const found = q.trim() ? search(list, q).slice(0, 50) : list.slice(0, 12);
     return {
       method: "answerInlineQuery",
       inline_query_id: u.inline_query.id,
@@ -151,9 +166,16 @@ async function handle(u: any): Promise<unknown | null> {
 
   if (u.callback_query) {
     const c = u.callback_query;
-    const a = list.find((x) => "a:" + x.slug === c.data);
     later(tg("answerCallbackQuery", { callback_query_id: c.id }));
-    if (!a || !c.message) return null;
+    if (!c.message) return null;
+    const where = { chat_id: c.message.chat.id, message_id: c.message.message_id };
+    const data: string = c.data ?? "";
+    if (data.startsWith("g:") && GROUPS.some((g) => "g:" + g.id === data)) {
+      return { method: "editMessageReplyMarkup", ...where, reply_markup: groupMenu(list, data.slice(2)) };
+    }
+    if (data === "back") return { method: "editMessageReplyMarkup", ...where, reply_markup: groupsMenu(list) };
+    const a = list.find((x) => "a:" + x.slug === data);
+    if (!a) return null;
     later(log("dm", c.from?.id, a.slug));
     return { method: "sendMessage", chat_id: c.message.chat.id, ...answerMessage(a) };
   }
@@ -166,7 +188,7 @@ async function handle(u: any): Promise<unknown | null> {
       method: "sendMessage",
       chat_id: m.chat.id,
       text: await helpText(list.length),
-      reply_markup: grid(list), // первая строка — «Попробовать в чате», ниже все ответы
+      reply_markup: groupsMenu(list), // «Попробовать в чате» + группы
     };
   }
   return null;

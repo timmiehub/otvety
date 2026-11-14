@@ -189,7 +189,7 @@ open("index.html","w",encoding="utf-8").write(hub)
 for p in PAGES:
     os.makedirs(p["slug"],exist_ok=True); open(p["slug"]+"/index.html","w",encoding="utf-8").write(page(p))
 # Публичный список для бота (и для og.py): только то, что нужно снаружи.
-pub=[dict(slug=p["slug"],word=p["word"],dot=p["dot"],a=p["a"],b=p["b"],bg=p["bg"],tag=p["tag"],keywords=p["keywords"],top=p["top"]) for p in PAGES]
+pub=[dict(slug=p["slug"],word=p["word"],dot=p["dot"],a=p["a"],b=p["b"],bg=p["bg"],tag=p["tag"],keywords=p["keywords"],top=p["top"],group=p["group"]) for p in PAGES]
 for out in ("answers.json","_bot/supabase/functions/otvety-bot/answers.json"):
     os.makedirs(os.path.dirname(out) or ".",exist_ok=True)
     json.dump(pub,open(out,"w",encoding="utf-8"),ensure_ascii=False)

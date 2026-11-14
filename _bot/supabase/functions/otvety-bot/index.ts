@@ -228,6 +228,7 @@ async function status() {
     last_error: info.last_error_message ?? null,
     db: db.ok ? "ok" : `error ${db.status}`,
     base: BASE,
+    fallback_answers: (fallback as Answer[]).length,
   };
 }
 

@@ -54,21 +54,19 @@ async function botName(): Promise<string> {
 }
 
 const pageUrl = (a: Answer) => `${BASE}${a.slug}/`;
-const sameButton = (a: Answer) => ({
-  text: "Ответить так же",
-  switch_inline_query_chosen_chat: {
-    query: a.word, allow_user_chats: true, allow_group_chats: true, allow_channel_chats: true,
-  },
-});
-// Сообщение = ссылка на лендинг; Telegram рисует под ней большое превью из og.png.
-const answerMessage = (a: Answer) => ({
-  text: pageUrl(a),
+// Кнопка под карточкой ведёт в бота; start-параметр говорит, с какой карточки пришли.
+const sameButton = (a: Answer, bot: string) => ({ text: "Ответить так же", url: `https://t.me/${bot}?start=a_${a.slug}` });
+// Сообщение = слово ответа, оформленное ссылкой на лендинг; под ним Telegram рисует большое превью из og.png.
+const esc = (t: string) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+const answerMessage = (a: Answer, bot: string) => ({
+  text: `<a href="${pageUrl(a)}">${esc(a.word + a.dot)}</a>`,
+  parse_mode: "HTML",
   link_preview_options: { url: pageUrl(a), prefer_large_media: true },
-  reply_markup: { inline_keyboard: [[sameButton(a)]] },
+  reply_markup: { inline_keyboard: [[sameButton(a, bot)]] },
 });
 
-function inlineResult(a: Answer) {
-  const m = answerMessage(a);
+function inlineResult(a: Answer, bot: string) {
+  const m = answerMessage(a, bot);
   return {
     type: "article",
     id: a.slug,
@@ -77,7 +75,7 @@ function inlineResult(a: Answer) {
     thumbnail_url: `${BASE}${a.slug}/thumb.jpg`,
     thumbnail_width: 320,
     thumbnail_height: 168,
-    input_message_content: { message_text: m.text, link_preview_options: m.link_preview_options },
+    input_message_content: { message_text: m.text, parse_mode: m.parse_mode, link_preview_options: m.link_preview_options },
     reply_markup: m.reply_markup,
   };
 }
@@ -142,6 +140,7 @@ function groupMenu(list: Answer[], groupId: string) {
 // deno-lint-ignore no-explicit-any
 async function handle(u: any): Promise<unknown | null> {
   const list = await getAnswers();
+  const bot = await botName();
 
   if (u.inline_query) {
     const q: string = u.inline_query.query ?? "";
@@ -151,7 +150,7 @@ async function handle(u: any): Promise<unknown | null> {
     return {
       method: "answerInlineQuery",
       inline_query_id: u.inline_query.id,
-      results: found.map(inlineResult),
+      results: found.map((a) => inlineResult(a, bot)),
       cache_time: 300,
       is_personal: false,
       button: { text: found.length ? "Как это работает" : "Ничего не нашлось — открыть список", start_parameter: "help" },
@@ -177,18 +176,20 @@ async function handle(u: any): Promise<unknown | null> {
     const a = list.find((x) => "a:" + x.slug === data);
     if (!a) return null;
     later(log("dm", c.from?.id, a.slug));
-    return { method: "sendMessage", chat_id: c.message.chat.id, ...answerMessage(a) };
+    return { method: "sendMessage", chat_id: c.message.chat.id, ...answerMessage(a, bot) };
   }
 
   const m = u.message;
   if (m && m.chat?.type === "private") {
     const isStart = typeof m.text === "string" && m.text.startsWith("/start");
-    if (isStart) later(log("start", m.from?.id, null));
+    // «/start a_<slug>» — пришёл с кнопки под карточкой: сразу открываем группу этого ответа.
+    const from = isStart ? list.find((a) => m.text.trim() === `/start a_${a.slug}`) : undefined;
+    if (isStart) later(log("start", m.from?.id, from?.slug ?? null));
     return {
       method: "sendMessage",
       chat_id: m.chat.id,
       text: await helpText(list.length),
-      reply_markup: groupsMenu(list), // «Попробовать в чате» + группы
+      reply_markup: from ? groupMenu(list, from.group) : groupsMenu(list),
     };
   }
   return null;

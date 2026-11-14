@@ -151,7 +151,7 @@ async function handle(u: any): Promise<unknown | null> {
       method: "answerInlineQuery",
       inline_query_id: u.inline_query.id,
       results: found.map((a) => inlineResult(a, bot)),
-      cache_time: 300,
+      cache_time: 60, // минута: правки ответов быстро доходят до всех
       is_personal: false,
       button: { text: found.length ? "Как это работает" : "Ничего не нашлось — открыть список", start_parameter: "help" },
     };

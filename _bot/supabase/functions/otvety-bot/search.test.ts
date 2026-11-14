@@ -17,7 +17,15 @@ const cases: [string, string][] = [
   ["релизим", "v-pyatnicu-ne-deploim"], ["позвони", "sozvonimsya"], ["аврал", "srochno"], ["не уверен", "ne-znayu"],
   // опечатки
   ["молодеца", "krasava"], ["созвно", "sozvonimsya"], ["пятнциа", "v-pyatnicu-ne-deploim"],
+  // новые ответы
+  ["спс", "spasibo"], ["благодарю", "spasibo"], ["понятно", "yasno"], ["сейчас", "scha"], ["щас", "scha"], ["ахаха", "oru"],
+  ["лол", "oru"], ["стыдно", "kring"], ["извини", "sorian"], ["сорри", "sorian"], ["факт", "baza"], ["так себе", "nu-takoe"],
+  ["спокойной ночи", "ya-splyu"], ["сделано", "gotovo"], ["done", "gotovo"], ["принял", "vzyal-v-rabotu"], ["посмотрю", "glyanu"],
+  ["отпуск", "ya-v-otpuske"], ["понедельник", "napomni"], ["пинг", "au"], ["ты где", "au"], ["еду", "uzhe-vyhozhu"],
+  ["опаздываю", "uzhe-vyhozhu"], ["не могу говорить", "perezvonyu"], ["не сегодня", "ne-segodnya"], ["нормально", "norm"],
+  ["как хочешь", "kak-skazhesh"], ["легко", "bez-problem"], ["без созвона", "a-mozhno-v-chat"], ["на встрече", "na-sozvone"],
   // группы
+  ["реакции", "oru"],
   ["работа", "u-menya-rabotaet"], ["мат", "otstan"], ["жестко", "otstan"],
 ];
 let fail = 0;

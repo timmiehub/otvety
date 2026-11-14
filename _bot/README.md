@@ -10,13 +10,15 @@ Supabase-проект **otvety** (`octsacjesrnqzodzjsqg`, Франкфурт). �
 - `supabase/migrations/` — таблица `events` и отчёты `stats_daily`, `stats_top`.
 
 ## Секреты (Supabase → Edge Functions → Secrets)
-- `BOT_TOKEN` — от @BotFather.
-- `WEBHOOK_SECRET` — любая случайная строка (латиница/цифры, 32+ символа). Из неё же выводится соль для хеша пользователей — не меняйте без нужды, иначе статистика «уникальных» начнётся заново.
+- `BOT_TOKEN` — от @BotFather. Это единственный обязательный секрет.
 - `BASE_URL` — необязательно, по умолчанию `https://otvety.nerdstudio.dev/`.
+- `WEBHOOK_SECRET` больше не нужен (можно удалить): секрет вебхука и соль для хеша пользователей выводятся из токена.
+  Смена токена → новый секрет вебхука (ставится сам) и новая соль (счётчик «уникальных» начнётся заново).
 
-## Первый запуск / после смены токена
-Открыть в браузере: `https://octsacjesrnqzodzjsqg.supabase.co/functions/v1/otvety-bot?setup=<WEBHOOK_SECRET>`
-Ответ покажет имя бота, результат установки вебхука и `db: ok`.
+## Вебхук и проверка
+Бот ставит вебхук сам при каждом холодном старте. Состояние — открыть
+`https://octsacjesrnqzodzjsqg.supabase.co/functions/v1/otvety-bot`:
+`webhook_set: true`, `last_error: null`, `db: ok`.
 
 ## Добавить ответ
 1. Дописать объект в `_project/answers.json` (slug, word, dot, цвета, тексты, `keywords`, `top`).

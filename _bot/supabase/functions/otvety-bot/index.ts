@@ -1,12 +1,20 @@
 // Telegram-бот «Ответы»: inline-режим + личка + статистика в public.events.
-// Секреты (Supabase → Edge Functions → Secrets): BOT_TOKEN, WEBHOOK_SECRET. Необязательно: BASE_URL.
-// Первая настройка после секретов: открыть <url функции>?setup=<WEBHOOK_SECRET> — поставит вебхук и команды.
+// Секрет (Supabase → Edge Functions → Secrets): BOT_TOKEN. Необязательно: BASE_URL.
+// Вебхук бот ставит себе сам при запуске. Состояние: GET <url функции> → JSON со статусом.
 import fallback from "./answers.json" with { type: "json" };
 
 import type { Answer } from "./search.ts";
 
-const TOKEN = Deno.env.get("BOT_TOKEN") ?? "";
-const SECRET = Deno.env.get("WEBHOOK_SECRET") ?? "";
+// trim: при вставке из буфера в секрет легко попадает перевод строки
+const TOKEN = (Deno.env.get("BOT_TOKEN") ?? "").trim();
+const enc = new TextEncoder();
+// Секрет вебхука и соль для хеша пользователей выводим из токена: знает их только тот, у кого есть токен.
+async function derive(label: string): Promise<string> {
+  const key = await crypto.subtle.importKey("raw", enc.encode(TOKEN), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  const sig = new Uint8Array(await crypto.subtle.sign("HMAC", key, enc.encode(label)));
+  return Array.from(sig, (b) => b.toString(16).padStart(2, "0")).join("");
+}
+const SECRET = TOKEN ? await derive("otvety-webhook") : "";
 const BASE = (Deno.env.get("BASE_URL") ?? "https://otvety.nerdstudio.dev/").replace(/\/?$/, "/");
 const SB_URL = Deno.env.get("SUPABASE_URL") ?? "";
 const SB_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
@@ -75,11 +83,10 @@ function inlineResult(a: Answer) {
 }
 
 // ---------- статистика ----------
-const enc = new TextEncoder();
 let hmacKey: CryptoKey | null = null;
 async function userHash(id?: number): Promise<string | null> {
   if (!id) return null;
-  // Соль выводим из WEBHOOK_SECRET, чтобы не заводить отдельный секрет. Сам id нигде не сохраняется.
+  // Соль выведена из токена (SECRET). Сам id нигде не сохраняется.
   hmacKey ??= await crypto.subtle.importKey("raw", enc.encode("otvety-user:" + SECRET), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
   const sig = new Uint8Array(await crypto.subtle.sign("HMAC", hmacKey, enc.encode(String(id))));
   return Array.from(sig.slice(0, 16), (b) => b.toString(16).padStart(2, "0")).join("");
@@ -173,29 +180,37 @@ function sameSecret(a: string, b: string) {
   return d === 0;
 }
 
-async function setup() {
+// Ставим вебхук при каждом холодном старте — так он всегда совпадает с текущим токеном и URL.
+async function ensureWebhook() {
+  if (!TOKEN) return { ok: false, error: "BOT_TOKEN not set" };
   const webhook = await tg("setWebhook", {
     url: FN_URL,
     secret_token: SECRET,
     allowed_updates: ["message", "inline_query", "chosen_inline_result", "callback_query"],
-    drop_pending_updates: true,
   });
-  const commands = await tg("setMyCommands", { commands: [{ command: "start", description: "Как пользоваться" }] });
+  await tg("setMyCommands", { commands: [{ command: "start", description: "Как пользоваться" }] });
+  if (!webhook.ok) console.error("setWebhook failed", webhook);
+  return webhook;
+}
+const ready = ensureWebhook().catch((e) => ({ ok: false, error: String(e) }));
+
+async function status() {
+  const webhook = await ready;
+  const info = (await tg("getWebhookInfo", {})).result ?? {};
   const db = await fetch(`${SB_URL}/rest/v1/events?select=id&limit=1`, { headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` } });
-  return { bot: "@" + (await botName()), webhook, commands, db: db.ok ? "ok" : `error ${db.status}`, base: BASE };
+  return {
+    bot: "@" + (await botName()),
+    webhook_set: webhook.ok === true && info.url === FN_URL,
+    pending: info.pending_update_count ?? null,
+    last_error: info.last_error_message ?? null,
+    db: db.ok ? "ok" : `error ${db.status}`,
+    base: BASE,
+  };
 }
 
 Deno.serve(async (req) => {
-  if (!TOKEN || !SECRET) return new Response("BOT_TOKEN / WEBHOOK_SECRET not set", { status: 500 });
-  const url = new URL(req.url);
-
-  if (req.method === "GET") {
-    const key = url.searchParams.get("setup");
-    if (key !== null && sameSecret(key, SECRET)) {
-      return Response.json(await setup());
-    }
-    return new Response("ok");
-  }
+  if (!TOKEN) return new Response("BOT_TOKEN not set", { status: 500 });
+  if (req.method === "GET") return Response.json(await status());
 
   if (!sameSecret(req.headers.get("X-Telegram-Bot-Api-Secret-Token") ?? "", SECRET)) {
     return new Response("forbidden", { status: 403 });

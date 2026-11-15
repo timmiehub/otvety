@@ -45,7 +45,7 @@ def page(p):
 <title>{p["word"]}{p["dot"]} — {p["tag"]}</title>
 <meta name="description" content="{p["tag"]}"><meta property="og:type" content="website">
 <meta property="og:title" content="{p["word"]}{p["dot"]}"><meta property="og:description" content="{p["tag"]}">
-<meta property="og:image" content="{BASE}{p["slug"]}/og.png"><meta property="og:url" content="{BASE}{p["slug"]}/">
+<meta property="og:image" content="{BASE}{p["slug"]}/og.jpg"><meta property="og:url" content="{BASE}{p["slug"]}/">
 <meta name="twitter:card" content="summary_large_image"><meta name="theme-color" content="{p["bg"]}">{FONTS}
 <style>:root{{--a:{p["a"]};--b:{p["b"]};--bg:{p["bg"]}}}{BASE_CSS}
 .hero{{position:relative;min-height:100svh;display:flex;flex-direction:column;overflow:hidden}}
@@ -182,7 +182,7 @@ document.querySelectorAll('.rev').forEach(el=>io.observe(el));
 
 hub_items = "".join(f'<a href="{p["slug"]}/" style="--a:{p["a"]};--b:{p["b"]}"><span>{p["word"]}{p["dot"]}</span><i>→</i></a>' for p in PAGES)
 hub = f"""<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Ответы — выбери свой</title><meta property="og:title" content="Выбери свой ответ"><meta property="og:description" content="{len(PAGES)} ответов на все случаи жизни."><meta property="og:image" content="{BASE}og.png"><meta name="twitter:card" content="summary_large_image">{FONTS}<style>:root{{--bg:#09090b}}{BASE_CSS}
+<title>Ответы — выбери свой</title><meta property="og:title" content="Выбери свой ответ"><meta property="og:description" content="{len(PAGES)} ответов на все случаи жизни."><meta property="og:image" content="{BASE}og.jpg"><meta name="twitter:card" content="summary_large_image">{FONTS}<style>:root{{--bg:#09090b}}{BASE_CSS}
 main.wrap{{min-height:100svh;display:flex;flex-direction:column;padding-top:48px}}
 .hubtg{{align-self:flex-start;margin:-12px 0 36px}}
 .eyebrow{{font:500 12px Unbounded,system-ui,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.45)}}

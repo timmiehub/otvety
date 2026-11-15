@@ -54,14 +54,17 @@ async function botName(): Promise<string> {
 }
 
 const pageUrl = (a: Answer) => `${BASE}${a.slug}/`;
+// Версия карточек: при смене картинок поднять — Telegram заново заберёт превью (он кеширует его по адресу ссылки).
+const CARD_V = "2";
+const shareUrl = (a: Answer) => `${pageUrl(a)}?v=${CARD_V}`;
 // Кнопка под карточкой ведёт в бота; start-параметр говорит, с какой карточки пришли.
 const sameButton = (a: Answer, bot: string) => ({ text: "Ответить так же", url: `https://t.me/${bot}?start=a_${a.slug}` });
 // Сообщение = слово ответа, оформленное ссылкой на лендинг; под ним Telegram рисует большое превью из og.png.
 const esc = (t: string) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 const answerMessage = (a: Answer, bot: string) => ({
-  text: `<a href="${pageUrl(a)}">${esc(a.word + a.dot)}</a>`,
+  text: `<a href="${shareUrl(a)}">${esc(a.word + a.dot)}</a>`,
   parse_mode: "HTML",
-  link_preview_options: { url: pageUrl(a), prefer_large_media: true },
+  link_preview_options: { url: shareUrl(a), prefer_large_media: true },
   reply_markup: { inline_keyboard: [[sameButton(a, bot)]] },
 });
 
@@ -232,6 +235,7 @@ async function status() {
     db: db.ok ? "ok" : `error ${db.status}`,
     base: BASE,
     fallback_answers: (fallback as Answer[]).length,
+    card_version: CARD_V,
   };
 }
 

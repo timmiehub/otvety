@@ -24,6 +24,9 @@ const cases: [string, string][] = [
   ["отпуск", "ya-v-otpuske"], ["понедельник", "napomni"], ["пинг", "au"], ["ты где", "au"], ["еду", "uzhe-vyhozhu"],
   ["опаздываю", "uzhe-vyhozhu"], ["не могу говорить", "perezvonyu"], ["не сегодня", "ne-segodnya"], ["нормально", "norm"],
   ["как хочешь", "kak-skazhesh"], ["легко", "bez-problem"], ["без созвона", "a-mozhno-v-chat"], ["на встрече", "na-sozvone"],
+  // приветствия и «забей»
+  ["привет", "privet"], ["здарова", "privet"], ["хай", "privet"], ["добрый день", "privet"], ["доброе утро", "dobroe-utro"],
+  ["утро", "dobroe-utro"], ["забей", "pohuy"], ["забудь", "pohuy"], ["забец", "pohuy"],
   // группы
   ["реакции", "oru"],
   ["работа", "u-menya-rabotaet"], ["мат", "otstan"], ["жестко", "otstan"],
